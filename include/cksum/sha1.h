@@ -2,7 +2,7 @@
  @file sha1.h
  @brief RFC 3174 compliant SHA1 implementation
  @details https://www.ietf.org/rfc/rfc3174.txt
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CKSUM_SHA1_H__

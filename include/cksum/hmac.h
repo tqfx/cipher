@@ -2,7 +2,7 @@
  @file hmac.h
  @brief RFC 2104 compliant HMAC implementation
  @details https://www.ietf.org/rfc/rfc2104.txt
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CKSUM_HMAC_H__

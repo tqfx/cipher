@@ -5,18 +5,18 @@ project(cjson VERSION 1.7.15 LANGUAGES C
   HOMEPAGE_URL "https://github.com/DaveGamble/cJSON"
 )
 
-add_library(${PROJECT_NAME} cJSON.c)
+add_library(cjson cJSON.c)
 
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(cjson PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
   $<INSTALL_INTERFACE:include>
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES C_VISIBILITY_PRESET hidden)
-target_compile_definitions(${PROJECT_NAME} PUBLIC CJSON_EXPORT_SYMBOLS CJSON_API_VISIBILITY)
+set_target_properties(cjson PROPERTIES C_VISIBILITY_PRESET hidden)
+target_compile_definitions(cjson PUBLIC CJSON_EXPORT_SYMBOLS CJSON_API_VISIBILITY)
 
 install(FILES cJSON.h DESTINATION include)
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS cjson
   EXPORT ${PROJECT_NAME}-targets
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib

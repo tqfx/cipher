@@ -1,7 +1,7 @@
 /*!
  @file crc.c
  @brief Testing Cyclic Redundancy Check
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cksum/crc.h"
@@ -59,7 +59,7 @@ static void create_table(const char *fname)
     fprintf(fp, "/*!\n");
     fprintf(fp, " @file %s\n", fname);
     fprintf(fp, " @brief Table for Cyclic Redundancy Check\n");
-    fprintf(fp, " @copyright Copyright (C) 2020 tqfx, All rights reserved.\n");
+    fprintf(fp, " @copyright Copyright (C) 2020-present tqfx, All rights reserved.\n");
     fprintf(fp, "*/\n\n");
 
     fprintf(fp, "#include <stdint.h>\n\n");

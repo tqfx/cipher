@@ -10,7 +10,7 @@ elseif("${VCPKG_TARGET_TRIPLET}" MATCHES "x64-mingw(.*)")
   include(cmake/mingw64.cmake)
 endif()
 
-project(cipher VERSION 0.1.0 LANGUAGES C DESCRIPTION "A cipher generator" HOMEPAGE_URL "https://github.com/tqfx/cipher.git")
+project(cipher VERSION 0.1.1 LANGUAGES C DESCRIPTION "A cipher generator" HOMEPAGE_URL "https://github.com/tqfx/cipher.git")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Specifies the build type on single-configuration generators." FORCE)
@@ -19,6 +19,14 @@ endif()
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   include(CTest)
+endif()
+
+include(CheckIncludeFiles)
+check_include_files(getopt.h HAS_GETOPT_H)
+
+if(BUILD_SHARED_LIBS)
+  check_include_files(sqlite3.h HAS_SQLITE3_H)
+  check_include_files(cjson/cJSON.h HAS_CJSON_H)
 endif()
 
 add_subdirectory(lib)
@@ -36,16 +44,16 @@ option(ENABLE_CLANG_TIDY "Enable clang-tidy" OFF)
 option(ENABLE_IYWU "Enable include-what-you-use" OFF)
 option(ENABLE_IPO "Enable interprocedural optimization" OFF)
 
-if(ENABLE_DOXYGEN)
-  find_package(Doxygen OPTIONAL_COMPONENTS dot mscgen dia)
-endif()
-
 if(ENABLE_WARNINGS)
   include(cmake/warnings.cmake)
 endif()
 
 if(ENABLE_SANITIZE)
   include(cmake/sanitize.cmake)
+endif()
+
+if(ENABLE_DOXYGEN)
+  find_package(Doxygen OPTIONAL_COMPONENTS dot mscgen dia)
 endif()
 
 if(ENABLE_IPO)
@@ -57,6 +65,7 @@ file(GLOB_RECURSE SOURCES include/cksum/*.h src/cksum/*.[ch])
 
 add_library(cksum ${SOURCES})
 add_library(${PROJECT_NAME}::cksum ALIAS cksum)
+target_compile_definitions(cksum PUBLIC _CRT_SECURE_NO_WARNINGS)
 target_include_directories(cksum PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
   $<INSTALL_INTERFACE:include>
@@ -70,9 +79,7 @@ add_library(${PROJECT_NAME}::cipher ALIAS cipher)
 target_include_directories(cipher PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/lib>
 )
-target_link_libraries(cipher PUBLIC
-  unofficial::sqlite3::sqlite3 cjson cksum
-)
+target_link_libraries(cipher PUBLIC cksum sqlite3 cjson)
 target_library_options(cipher)
 
 file(GLOB_RECURSE SOURCES src/cli/*.[ch])
@@ -82,16 +89,10 @@ set_target_properties(cipher-cli PROPERTIES OUTPUT_NAME cipher
   VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
 target_compile_definitions(cipher-cli PRIVATE _POSIX_C_SOURCE=200809L)
-target_link_libraries(cipher-cli PRIVATE cipher)
+target_link_libraries(cipher-cli PRIVATE cipher
+  $<$<NOT:$<BOOL:${HAS_GETOPT_H}>>:getopt>
+)
 target_executable_options(cipher-cli)
-
-include(CheckIncludeFiles)
-check_include_files(getopt.h HAS_GETOPT_H)
-
-if(NOT HAS_GETOPT_H)
-  find_path(GETOPT_INCLUDE_DIRS NAMES getopt.h)
-  find_library(GETOPT_LIBRARIES NAMES getopt)
-endif()
 
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
   DESTINATION include FILES_MATCHING

@@ -2,7 +2,7 @@
  @file blake2s.h
  @brief RFC 7693 compliant BLAKE implementation
  @details https://www.ietf.org/rfc/rfc7693.txt
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CKSUM_BLAKE2S_H__

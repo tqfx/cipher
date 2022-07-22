@@ -1,7 +1,7 @@
 /*!
  @file info.c
  @brief Testing cipher infomation
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cipher/info.h"
@@ -10,11 +10,11 @@
 
 static void test(size_t n)
 {
-    cipher_info_s *ctx = cipher_info_new();
+    c_info_s *ctx = c_info_new();
 
     for (size_t i = 0; i != n; ++i)
     {
-        cipher_s *obj = cipher_info_push(ctx);
+        cipher_s *obj = c_info_push(ctx);
         if (obj == 0)
         {
             continue;
@@ -25,10 +25,10 @@ static void test(size_t n)
         cipher_set_hash(obj, buf);
         cipher_set_text(obj, buf);
         cipher_set_hint(obj, buf);
-        cipher_set_blob(obj, buf);
+        cipher_set_misc(obj, buf);
     }
 
-    cipher_info_die(ctx);
+    c_info_die(ctx);
 }
 
 int main(void)

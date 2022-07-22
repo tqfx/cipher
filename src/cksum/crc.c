@@ -2,7 +2,7 @@
  @file crc.c
  @brief Cyclic Redundancy Check
  @details https://en.wikipedia.org/wiki/Cyclic_redundancy_check
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cksum/crc.h"

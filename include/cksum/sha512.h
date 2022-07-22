@@ -2,7 +2,7 @@
  @file sha512.h
  @brief RFC 5754 compliant SHA2 implementation
  @details https://www.ietf.org/rfc/rfc5754.txt
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CKSUM_SHA512_H__

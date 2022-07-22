@@ -2,7 +2,7 @@
  @file sha3.h
  @brief SHA3 implementation
  @details https://en.wikipedia.org/wiki/SHA-3
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CKSUM_SHA3_H__

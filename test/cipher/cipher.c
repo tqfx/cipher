@@ -1,7 +1,7 @@
 /*!
  @file cipher.c
  @brief Testing cipher core
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cipher/cipher.h"
@@ -10,7 +10,7 @@
 
 static char word[] = "word";
 static char text[] = "test";
-static char blob[] = ".";
+static char misc[] = ".";
 
 static void test_v1(void)
 {
@@ -18,7 +18,7 @@ static void test_v1(void)
 
     cipher_s ctx[1];
     ctx->text = text;
-    ctx->blob = blob;
+    ctx->misc = misc;
     ctx->size = CIPHER_OUTSIZ;
 
     ctx->type = CIPHER_EMAIL;
@@ -172,7 +172,7 @@ static void test_v2(void)
 
     cipher_s ctx[1];
     ctx->text = text;
-    ctx->blob = blob;
+    ctx->misc = misc;
     ctx->size = CIPHER_OUTSIZ;
 
     ctx->type = CIPHER_EMAIL;

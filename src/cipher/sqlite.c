@@ -1,7 +1,7 @@
 /*!
  @file sqlite.c
  @brief cipher sqlite
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cipher/sqlite.h"
@@ -21,7 +21,7 @@ static struct
     const char *info;
     const char *info_hint;
     const char *info_text;
-    const char *info_blob;
+    const char *info_misc;
     const char *info_hash;
     const char *info_size;
     const char *info_type;
@@ -37,14 +37,14 @@ static struct
         .info = "info",
         .info_hint = "hint",
         .info_text = "text",
-        .info_blob = "blob",
+        .info_misc = "misc",
         .info_size = "size",
         .info_hash = "hash",
         .info_type = "type",
     },
 };
 
-int cipher_sqlite_begin(sqlite3 *db)
+int c_sqlite_begin(sqlite3 *db)
 {
     assert(db);
     sqlite3_stmt *stmt = 0;
@@ -53,7 +53,7 @@ int cipher_sqlite_begin(sqlite3 *db)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_commit(sqlite3 *db)
+int c_sqlite_commit(sqlite3 *db)
 {
     assert(db);
     sqlite3_stmt *stmt = 0;
@@ -62,7 +62,7 @@ int cipher_sqlite_commit(sqlite3 *db)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_create_rule(sqlite3 *db)
+int c_sqlite_create_rule(sqlite3 *db)
 {
     assert(db);
     sqlite3_stmt *stmt = 0;
@@ -81,7 +81,7 @@ int cipher_sqlite_create_rule(sqlite3 *db)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_create_word(sqlite3 *db)
+int c_sqlite_create_word(sqlite3 *db)
 {
     assert(db);
     sqlite3_stmt *stmt = 0;
@@ -99,7 +99,7 @@ int cipher_sqlite_create_word(sqlite3 *db)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_create_info(sqlite3 *db)
+int c_sqlite_create_info(sqlite3 *db)
 {
     assert(db);
     sqlite3_stmt *stmt = 0;
@@ -113,7 +113,7 @@ int cipher_sqlite_create_info(sqlite3 *db)
                           "%s integer default 0,"
                           "%s text,%s text);";
         sqlite3_str_appendf(str, sql, local->info, local->info_text, local->info_hash,
-                            local->info_size, local->info_type, local->info_blob, local->info_hint);
+                            local->info_size, local->info_type, local->info_misc, local->info_hint);
     }
     char *sql = sqlite3_str_finish(str);
     sqlite3_prepare(db, sql, -1, &stmt, 0);
@@ -123,7 +123,7 @@ int cipher_sqlite_create_info(sqlite3 *db)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_delete_rule(sqlite3 *db)
+int c_sqlite_delete_rule(sqlite3 *db)
 {
     assert(db);
     sqlite3_stmt *stmt = 0;
@@ -141,7 +141,7 @@ int cipher_sqlite_delete_rule(sqlite3 *db)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_delete_word(sqlite3 *db)
+int c_sqlite_delete_word(sqlite3 *db)
 {
     assert(db);
     sqlite3_stmt *stmt = 0;
@@ -159,7 +159,7 @@ int cipher_sqlite_delete_word(sqlite3 *db)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_delete_info(sqlite3 *db)
+int c_sqlite_delete_info(sqlite3 *db)
 {
     assert(db);
     sqlite3_stmt *stmt = 0;
@@ -177,22 +177,22 @@ int cipher_sqlite_delete_info(sqlite3 *db)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_init(sqlite3 *db)
+int c_sqlite_init(sqlite3 *db)
 {
     assert(db);
-    cipher_sqlite_create_rule(db);
-    cipher_sqlite_create_word(db);
-    cipher_sqlite_create_info(db);
-    return cipher_sqlite_begin(db);
+    c_sqlite_create_rule(db);
+    c_sqlite_create_word(db);
+    c_sqlite_create_info(db);
+    return c_sqlite_begin(db);
 }
 
-int cipher_sqlite_exit(sqlite3 *db)
+int c_sqlite_exit(sqlite3 *db)
 {
     assert(db);
-    return cipher_sqlite_commit(db);
+    return c_sqlite_commit(db);
 }
 
-int cipher_sqlite_out_word(sqlite3 *db, cipher_word_s *out)
+int c_sqlite_out_word(sqlite3 *db, c_word_s *out)
 {
     assert(db);
     assert(out);
@@ -214,14 +214,14 @@ int cipher_sqlite_out_word(sqlite3 *db, cipher_word_s *out)
         {
             continue;
         }
-        str_s *ctx = cipher_word_push(out);
+        str_s *ctx = c_word_push(out);
         str_puts(ctx, text);
     }
 
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_out_info(sqlite3 *db, cipher_info_s *out)
+int c_sqlite_out_info(sqlite3 *db, c_info_s *out)
 {
     assert(db);
     assert(out);
@@ -243,18 +243,22 @@ int cipher_sqlite_out_info(sqlite3 *db, cipher_info_s *out)
         {
             continue;
         }
-        cipher_s *ctx = cipher_info_push(out);
+        cipher_s *ctx = c_info_push(out);
         cipher_set_text(ctx, text);
         if (((void)(text = sqlite3_column_text(stmt, 1)), text))
         {
             cipher_set_hash(ctx, text);
         }
+        else
+        {
+            cipher_set_hash(ctx, "MD5");
+        }
         cipher_set_size(ctx, (unsigned int)sqlite3_column_int(stmt, 2));
         cipher_set_type(ctx, (unsigned int)sqlite3_column_int(stmt, 3));
-        if (((void)(text = sqlite3_column_text(stmt, 5)), text) &&
+        if (((void)(text = sqlite3_column_text(stmt, 4)), text) &&
             cipher_get_type(ctx) == CIPHER_OTHER)
         {
-            cipher_set_blob(ctx, text);
+            cipher_set_misc(ctx, text);
         }
         if (((void)(text = sqlite3_column_text(stmt, 5)), text))
         {
@@ -265,7 +269,7 @@ int cipher_sqlite_out_info(sqlite3 *db, cipher_info_s *out)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_add_word(sqlite3 *db, const cipher_word_s *in)
+int c_sqlite_add_word(sqlite3 *db, const c_word_s *in)
 {
     assert(db);
     assert(in);
@@ -280,7 +284,7 @@ int cipher_sqlite_add_word(sqlite3 *db, const cipher_word_s *in)
     sqlite3_prepare(db, sql, -1, &stmt, 0);
     sqlite3_free(sql);
 
-    cipher_word_foreach(it, in)
+    c_word_foreach(it, in)
     {
         if (str_len(it))
         {
@@ -293,7 +297,7 @@ int cipher_sqlite_add_word(sqlite3 *db, const cipher_word_s *in)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_add_info(sqlite3 *db, const cipher_info_s *in)
+int c_sqlite_add_info(sqlite3 *db, const c_info_s *in)
 {
     assert(db);
     assert(in);
@@ -308,7 +312,7 @@ int cipher_sqlite_add_info(sqlite3 *db, const cipher_info_s *in)
     sqlite3_prepare(db, sql, -1, &stmt, 0);
     sqlite3_free(sql);
 
-    cipher_info_foreach(it, in)
+    c_info_foreach(it, in)
     {
         if (cipher_get_text(it))
         {
@@ -326,10 +330,10 @@ int cipher_sqlite_add_info(sqlite3 *db, const cipher_info_s *in)
                 sqlite3_bind_text(stmt, 2, cipher_get_hash(it), size, SQLITE_STATIC);
             }
             {
-                int size = (cipher_get_blob(it) && cipher_get_type(it) == CIPHER_OTHER)
-                               ? (int)strlen(cipher_get_blob(it))
+                int size = (cipher_get_misc(it) && cipher_get_type(it) == CIPHER_OTHER)
+                               ? (int)strlen(cipher_get_misc(it))
                                : 0;
-                sqlite3_bind_text(stmt, 5, cipher_get_blob(it), size, SQLITE_STATIC);
+                sqlite3_bind_text(stmt, 5, cipher_get_misc(it), size, SQLITE_STATIC);
             }
             {
                 int size = cipher_get_hint(it)
@@ -344,7 +348,7 @@ int cipher_sqlite_add_info(sqlite3 *db, const cipher_info_s *in)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_del_word(sqlite3 *db, const cipher_word_s *in)
+int c_sqlite_del_word(sqlite3 *db, const c_word_s *in)
 {
     assert(db);
     assert(in);
@@ -359,7 +363,7 @@ int cipher_sqlite_del_word(sqlite3 *db, const cipher_word_s *in)
     sqlite3_prepare(db, sql, -1, &stmt, 0);
     sqlite3_free(sql);
 
-    cipher_word_foreach(it, in)
+    c_word_foreach(it, in)
     {
         if (str_len(it))
         {
@@ -372,7 +376,7 @@ int cipher_sqlite_del_word(sqlite3 *db, const cipher_word_s *in)
     return sqlite3_finalize(stmt);
 }
 
-int cipher_sqlite_del_info(sqlite3 *db, const cipher_info_s *in)
+int c_sqlite_del_info(sqlite3 *db, const c_info_s *in)
 {
     assert(db);
     assert(in);
@@ -387,7 +391,7 @@ int cipher_sqlite_del_info(sqlite3 *db, const cipher_info_s *in)
     sqlite3_prepare(db, sql, -1, &stmt, 0);
     sqlite3_free(sql);
 
-    cipher_info_foreach(it, in)
+    c_info_foreach(it, in)
     {
         if (cipher_get_text(it))
         {

@@ -2,7 +2,7 @@
  @file crc.h
  @brief Cyclic Redundancy Check
  @details https://en.wikipedia.org/wiki/Cyclic_redundancy_check
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CKSUM_CRC_H__

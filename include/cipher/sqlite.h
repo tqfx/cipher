@@ -1,7 +1,7 @@
 /*!
  @file sqlite.h
  @brief cipher sqlite
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CIPHER_SQLITE_H__
@@ -25,26 +25,25 @@
 extern "C" {
 #endif /* __cplusplus */
 
-int cipher_sqlite_begin(sqlite3 *db);
-int cipher_sqlite_commit(sqlite3 *db);
+int c_sqlite_init(sqlite3 *db);
+int c_sqlite_exit(sqlite3 *db);
 
-int cipher_sqlite_create_rule(sqlite3 *db);
-int cipher_sqlite_create_word(sqlite3 *db);
-int cipher_sqlite_create_info(sqlite3 *db);
-int cipher_sqlite_delete_rule(sqlite3 *db);
-int cipher_sqlite_delete_word(sqlite3 *db);
-int cipher_sqlite_delete_info(sqlite3 *db);
+int c_sqlite_begin(sqlite3 *db);
+int c_sqlite_commit(sqlite3 *db);
 
-int cipher_sqlite_init(sqlite3 *db);
-int cipher_sqlite_exit(sqlite3 *db);
+int c_sqlite_create_rule(sqlite3 *db);
+int c_sqlite_create_word(sqlite3 *db);
+int c_sqlite_create_info(sqlite3 *db);
+int c_sqlite_delete_rule(sqlite3 *db);
+int c_sqlite_delete_word(sqlite3 *db);
+int c_sqlite_delete_info(sqlite3 *db);
 
-int cipher_sqlite_out_word(sqlite3 *db, cipher_word_s *out);
-int cipher_sqlite_out_info(sqlite3 *db, cipher_info_s *out);
-
-int cipher_sqlite_add_word(sqlite3 *db, const cipher_word_s *in);
-int cipher_sqlite_add_info(sqlite3 *db, const cipher_info_s *in);
-int cipher_sqlite_del_word(sqlite3 *db, const cipher_word_s *in);
-int cipher_sqlite_del_info(sqlite3 *db, const cipher_info_s *in);
+int c_sqlite_out_word(sqlite3 *db, c_word_s *out);
+int c_sqlite_out_info(sqlite3 *db, c_info_s *out);
+int c_sqlite_add_word(sqlite3 *db, const c_word_s *in);
+int c_sqlite_add_info(sqlite3 *db, const c_info_s *in);
+int c_sqlite_del_word(sqlite3 *db, const c_word_s *in);
+int c_sqlite_del_info(sqlite3 *db, const c_info_s *in);
 
 #if defined(__cplusplus)
 }

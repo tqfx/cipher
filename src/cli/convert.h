@@ -1,7 +1,7 @@
 /*!
  @file convert.h
  @brief code conversion
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CONVERT_H__

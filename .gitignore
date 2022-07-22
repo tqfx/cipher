@@ -52,19 +52,26 @@ target/
 build/
 dist/
 
-# pipenv
-Pipfile.lock
+# MacOS Cache
+.DS_Store
 
 # Visual Studio Code
 .vscode
 .cache
 
 # CMake
+src/config.h*
 install[_-]*
 build[_-]*
 
+# Xmake
+.xmake/
+
 # Rust
 Cargo.lock
+
+# pipenv
+Pipfile.lock
 
 # Doxygen
 *.log

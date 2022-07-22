@@ -1,7 +1,7 @@
 /*!
  @file hash.h
  @brief private macros for hash library
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __HASH_H__
@@ -14,6 +14,14 @@
 #if defined(_MSC_VER)
 #include <stdlib.h>
 #endif /* _MSC_VER */
+
+/* fallback for __has_builtin */
+#ifndef __has_builtin
+#define __has_builtin(...) 0
+#ifndef __builtin_expect
+#define __builtin_expect(...)
+#endif /* __builtin_expect */
+#endif /* __has_builtin */
 
 /* Endian Neutral macros that work on all platforms */
 

@@ -1,7 +1,7 @@
 /*!
  @file json.c
  @brief cipher json
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cipher/stream.h"
@@ -9,7 +9,7 @@
 
 #include <assert.h>
 
-int cipher_json_load(cJSON **out, const char *in)
+int c_json_load(cJSON **out, const char *in)
 {
     assert(in);
     assert(out);
@@ -25,7 +25,7 @@ int cipher_json_load(cJSON **out, const char *in)
     return ret;
 }
 
-int cipher_json_export_info(const cJSON *in, cipher_info_s *out)
+int c_json_export_info(const cJSON *in, c_info_s *out)
 {
     assert(in);
     assert(out);
@@ -45,11 +45,7 @@ int cipher_json_export_info(const cJSON *in, cipher_info_s *out)
         cipher_get_text(ctx) = cJSON_GetStringValue(object);
 
         object = cJSON_GetObjectItem(item, "hash");
-        if (object == 0)
-        {
-            continue;
-        }
-        cipher_get_hash(ctx) = cJSON_GetStringValue(object);
+        cipher_get_hash(ctx) = object ? cJSON_GetStringValue(object) : "MD5";
 
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
@@ -76,31 +72,28 @@ int cipher_json_export_info(const cJSON *in, cipher_info_s *out)
 
         if (cipher_get_type(ctx) == CIPHER_OTHER)
         {
-            object = cJSON_GetObjectItem(item, "blob");
+            object = cJSON_GetObjectItem(item, "misc");
             if (object == 0)
             {
                 continue;
             }
-            cipher_get_blob(ctx) = cJSON_GetStringValue(object);
+            cipher_get_misc(ctx) = cJSON_GetStringValue(object);
         }
 
         object = cJSON_GetObjectItem(item, "hint");
-        if (object)
-        {
-        }
         cipher_get_hint(ctx) = cJSON_GetStringValue(object);
 
-        cipher_info_add(out, ctx);
+        c_info_add(out, ctx);
     }
     return 0;
 }
 
-int cipher_json_import_info(cJSON **out, const cipher_info_s *in)
+int c_json_import_info(cJSON **out, const c_info_s *in)
 {
     assert(in);
     assert(out);
     *out = cJSON_CreateArray();
-    cipher_info_foreach(it, in)
+    c_info_foreach(it, in)
     {
         if (cipher_get_text(it) == 0)
         {
@@ -111,9 +104,9 @@ int cipher_json_import_info(cJSON **out, const cipher_info_s *in)
         cJSON_AddStringToObject(item, "hash", cipher_get_hash(it));
         cJSON_AddNumberToObject(item, "size", cipher_get_size(it));
         cJSON_AddNumberToObject(item, "type", cipher_get_type(it));
-        if (cipher_get_blob(it) && cipher_get_type(it) == CIPHER_OTHER)
+        if (cipher_get_misc(it) && cipher_get_type(it) == CIPHER_OTHER)
         {
-            cJSON_AddStringToObject(item, "blob", cipher_get_blob(it));
+            cJSON_AddStringToObject(item, "misc", cipher_get_misc(it));
         }
         if (cipher_get_hint(it))
         {

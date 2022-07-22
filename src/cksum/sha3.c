@@ -2,7 +2,7 @@
  @file sha3.c
  @brief SHA3 implementation
  @details https://en.wikipedia.org/wiki/SHA-3
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cksum/sha3.h"

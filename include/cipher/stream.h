@@ -1,6 +1,6 @@
 /*!
  @file stream.h
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CIPHER_STREAM_H__

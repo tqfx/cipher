@@ -1,7 +1,7 @@
 /*!
  @file conv.c
  @brief convert library
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cksum/util/conv.h"

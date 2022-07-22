@@ -1,7 +1,7 @@
 /*!
  @file word.c
  @brief Testing cipher word
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cipher/word.h"
@@ -10,15 +10,15 @@
 
 static void test(size_t n)
 {
-    cipher_word_s *ctx = cipher_word_new();
+    c_word_s *ctx = c_word_new();
 
     for (size_t i = 0; i != n; ++i)
     {
-        str_s *obj = cipher_word_push(ctx);
+        str_s *obj = c_word_push(ctx);
         str_printf(obj, "%zu", i);
     }
 
-    cipher_word_die(ctx);
+    c_word_die(ctx);
 }
 
 int main(void)

@@ -1,7 +1,7 @@
 /*!
  @file hmac.h
  @brief hmac library utils
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CKSUM_UTIL_HMAC_H__

@@ -2,7 +2,7 @@
  @file sha1.c
  @brief RFC 3174 compliant SHA1 implementation
  @details https://www.ietf.org/rfc/rfc3174.txt
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #include "cksum/sha1.h"

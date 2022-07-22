@@ -1,7 +1,7 @@
 /*!
  @file conv.h
  @brief convert library
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __CKSUM_UTIL_CONV_H__

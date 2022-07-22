@@ -1,7 +1,7 @@
 /*!
  @file app.h
  @brief application
- @copyright Copyright (C) 2020 tqfx, All rights reserved.
+ @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
 #ifndef __APP_H__
@@ -16,25 +16,31 @@
 extern "C" {
 #endif /* __cplusplus */
 
-void app_log(unsigned int n, ...);
-int app_exec(const cipher_s *info, const char *word);
-int app_init(const char *fname);
+void app_log(uint_t n, ...);
+int app_exec(const cipher_s *info, cstr_t word);
+
+int app_init(cstr_t fname);
 int app_exit(void);
-void app_show_word(const void *word);
-void app_show_info(const void *info);
-void app_show_word_idx(const cipher_word_s *word);
-void app_show_info_idx(const cipher_info_s *info);
-int app_add_word(const cipher_word_s *word);
-int app_add_info(const cipher_info_s *info);
-int app_del_word(const cipher_word_s *word);
-int app_del_info(const cipher_info_s *info);
-int app_del_word_idx(const cipher_word_s *word);
-int app_del_info_idx(const cipher_info_s *info);
-int app_generate_idx(unsigned int word, unsigned int info);
-int app_generate_key(const cipher_s *ctx);
-int app_convert(const char *in, const char *out);
-int app_import(const char *fname);
-int app_export(const char *fname);
+
+void app_search_word_str(cptr_t word);
+void app_search_info_str(cptr_t info);
+void app_search_word_idx(const c_word_s *word);
+void app_search_info_idx(const c_info_s *info);
+
+int app_create_word(const c_word_s *word);
+int app_create_info(const c_info_s *info);
+
+int app_delete_word(const c_word_s *word);
+int app_delete_info(const c_info_s *info);
+int app_delete_word_idx(const c_word_s *word);
+int app_delete_info_idx(const c_info_s *info);
+
+int app_exec_idx(size_t word, size_t info);
+int app_exec_ctx(const cipher_s *ctx);
+
+int app_convert(cstr_t in, cstr_t out);
+int app_import(cstr_t fname);
+int app_export(cstr_t fname);
 
 #if defined(__cplusplus)
 }
