@@ -90,13 +90,13 @@ int c_rule_swap(c_rule_s *ctx, size_t lhs, size_t rhs);
 
 rule_s *c_rule_insert(c_rule_s *ctx, size_t idx);
 
-rule_s *c_rule_push_front(c_rule_s *ctx);
+rule_s *c_rule_push_fore(c_rule_s *ctx);
 
 rule_s *c_rule_push_back(c_rule_s *ctx);
 
 rule_s *c_rule_remove(c_rule_s *ctx, size_t idx);
 
-rule_s *c_rule_pop_front(c_rule_s *ctx);
+rule_s *c_rule_pop_fore(c_rule_s *ctx);
 
 rule_s *c_rule_pop_back(c_rule_s *ctx);
 

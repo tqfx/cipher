@@ -157,7 +157,7 @@ str_s *c_word_insert(c_word_s *ctx, size_t idx)
     return c_word_inc_(ctx);
 }
 
-str_s *c_word_push_front(c_word_s *ctx)
+str_s *c_word_push_fore(c_word_s *ctx)
 {
     return c_word_insert(ctx, 0);
 }
@@ -192,7 +192,7 @@ str_s *c_word_remove(c_word_s *ctx, size_t idx)
     return ctx->head != ctx->tail ? c_word_inc_(ctx) : NULL;
 }
 
-str_s *c_word_pop_front(c_word_s *ctx)
+str_s *c_word_pop_fore(c_word_s *ctx)
 {
     return c_word_remove(ctx, 0);
 }

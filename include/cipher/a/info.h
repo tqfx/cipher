@@ -75,13 +75,13 @@ int c_info_swap(c_info_s *ctx, size_t lhs, size_t rhs);
 
 cipher_s *c_info_insert(c_info_s *ctx, size_t idx);
 
-cipher_s *c_info_push_front(c_info_s *ctx);
+cipher_s *c_info_push_fore(c_info_s *ctx);
 
 cipher_s *c_info_push_back(c_info_s *ctx);
 
 cipher_s *c_info_remove(c_info_s *ctx, size_t idx);
 
-cipher_s *c_info_pop_front(c_info_s *ctx);
+cipher_s *c_info_pop_fore(c_info_s *ctx);
 
 cipher_s *c_info_pop_back(c_info_s *ctx);
 

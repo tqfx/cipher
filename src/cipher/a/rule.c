@@ -165,7 +165,7 @@ rule_s *c_rule_insert(c_rule_s *ctx, size_t idx)
     return c_rule_inc_(ctx);
 }
 
-rule_s *c_rule_push_front(c_rule_s *ctx)
+rule_s *c_rule_push_fore(c_rule_s *ctx)
 {
     return c_rule_insert(ctx, 0);
 }
@@ -200,7 +200,7 @@ rule_s *c_rule_remove(c_rule_s *ctx, size_t idx)
     return ctx->head != ctx->tail ? c_rule_inc_(ctx) : NULL;
 }
 
-rule_s *c_rule_pop_front(c_rule_s *ctx)
+rule_s *c_rule_pop_fore(c_rule_s *ctx)
 {
     return c_rule_remove(ctx, 0);
 }

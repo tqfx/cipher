@@ -74,13 +74,13 @@ int c_word_swap(c_word_s *ctx, size_t lhs, size_t rhs);
 
 str_s *c_word_insert(c_word_s *ctx, size_t idx);
 
-str_s *c_word_push_front(c_word_s *ctx);
+str_s *c_word_push_fore(c_word_s *ctx);
 
 str_s *c_word_push_back(c_word_s *ctx);
 
 str_s *c_word_remove(c_word_s *ctx, size_t idx);
 
-str_s *c_word_pop_front(c_word_s *ctx);
+str_s *c_word_pop_fore(c_word_s *ctx);
 
 str_s *c_word_pop_back(c_word_s *ctx);
 
