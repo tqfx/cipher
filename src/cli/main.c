@@ -49,7 +49,7 @@ static void main_help(void)
   -i --index     using the index\n\
   -s --search    search something\n\
   -c --create    create something\n\
-  -d --delele    delete something\n\
+  -d --delete    delete something\n\
   -a --hash      hash algorithm\n\
   -k --text      string(\"*\"->\"\")\n\
   -t --type      number(0:email 1:digit 2:other)\n\
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
         {"index", no_argument, 0, 'i'},
         {"search", no_argument, 0, 's'},
         {"create", no_argument, 0, 'c'},
-        {"delele", no_argument, 0, 'd'},
+        {"delete", no_argument, 0, 'd'},
         {"hash", required_argument, 0, 'a'},
         {"text", required_argument, 0, 'k'},
         {"hint", required_argument, 0, 'h'},
