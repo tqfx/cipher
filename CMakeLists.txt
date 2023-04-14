@@ -61,33 +61,22 @@ if(ENABLE_IPO)
   check_ipo_supported(RESULT ENABLE_IPO)
 endif()
 
-file(GLOB_RECURSE SOURCES include/cksum/*.h src/cksum/*.[ch])
-
-add_library(cksum ${SOURCES})
-add_library(${PROJECT_NAME}::cksum ALIAS cksum)
-target_compile_definitions(cksum PUBLIC _CRT_SECURE_NO_WARNINGS)
-target_include_directories(cksum PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-)
-target_library_options(cksum)
-
-file(GLOB_RECURSE SOURCES include/cipher/*.h src/cipher/*.[ch])
+file(GLOB SOURCES include/cipher/*.h src/*.[ch])
 
 add_library(cipher ${SOURCES})
 add_library(${PROJECT_NAME}::cipher ALIAS cipher)
+target_compile_definitions(cipher PUBLIC _CRT_SECURE_NO_WARNINGS)
 target_include_directories(cipher PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/lib>
 )
-target_link_libraries(cipher PUBLIC cksum sqlite3 cjson)
+target_link_libraries(cipher PUBLIC sqlite3 cjson alib)
 target_library_options(cipher)
 
 file(GLOB_RECURSE SOURCES src/cli/*.[ch])
 
 add_executable(cipher-cli ${SOURCES})
-set_target_properties(cipher-cli PROPERTIES OUTPUT_NAME cipher
-  VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-)
+set_target_properties(cipher-cli PROPERTIES RUNTIME_OUTPUT_NAME cipher)
 target_compile_definitions(cipher-cli PRIVATE _POSIX_C_SOURCE=200809L)
 target_link_libraries(cipher-cli PRIVATE cipher
   $<$<NOT:$<BOOL:${HAS_GETOPT_H}>>:getopt>
@@ -98,7 +87,7 @@ install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/include/
   DESTINATION include FILES_MATCHING
   REGEX ".*\.\(h\|hh\|hxx\|hpp\)$"
 )
-install(TARGETS cksum cipher cipher-cli
+install(TARGETS cipher cipher-cli
   EXPORT ${PROJECT_NAME}-targets
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
@@ -195,9 +184,9 @@ if(DOXYGEN_FOUND)
   endif()
 
   # https://www.doxygen.nl/manual/config.html
-  doxygen_add_docs(docs
+  doxygen_add_docs(docs WORKING_DIRECTORY
+    ${CMAKE_CURRENT_LIST_DIR}/include/cipher
+    ${CMAKE_CURRENT_LIST_DIR}/include/cipher
     ${CMAKE_CURRENT_LIST_DIR}/README.md
-    ${CMAKE_CURRENT_LIST_DIR}/include
-    ${CMAKE_CURRENT_LIST_DIR}/src
   )
 endif()

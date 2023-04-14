@@ -1,10 +1,9 @@
 /*!
  @file stream.h
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
-#ifndef __CIPHER_STREAM_H__
-#define __CIPHER_STREAM_H__
+#ifndef CIPHER_STREAM_H
+#define CIPHER_STREAM_H
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -15,15 +14,15 @@ extern "C" {
 #endif /* __cplusplus */
 
 long stream_fsize(FILE *handle);
-long stream_size(const char *fname);
+long stream_size(char const *fname);
 
 int stream_fread(FILE *handle, void **pdata, size_t *nbyte);
-int stream_read(const char *fname, void **pdata, size_t *nbyte);
-int stream_fwrite(FILE *handle, const void *pdata, size_t nbyte);
-int stream_write(const char *fname, const void *pdata, size_t nbyte);
+int stream_read(char const *fname, void **pdata, size_t *nbyte);
+int stream_fwrite(FILE *handle, void const *pdata, size_t nbyte);
+int stream_write(char const *fname, void const *pdata, size_t nbyte);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __CIPHER_STREAM_H__ */
+#endif /* CIPHER_STREAM_H */

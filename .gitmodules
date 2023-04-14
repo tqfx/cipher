@@ -1,0 +1,3 @@
+[submodule "lib/liba"]
+	path = lib/liba
+	url = github.com/tqfx/liba.git

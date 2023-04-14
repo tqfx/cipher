@@ -1,11 +1,10 @@
 /*!
  @file json.h
  @brief cipher json
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
-#ifndef __CIPHER_JSON_H__
-#define __CIPHER_JSON_H__
+#ifndef CIPHER_JSON_H
+#define CIPHER_JSON_H
 
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
@@ -23,12 +22,12 @@
 extern "C" {
 #endif /* __cplusplus */
 
-int c_json_load(cJSON **out, const char *in);
-int c_json_export_info(const cJSON *in, c_info_s *out);
-int c_json_import_info(cJSON **out, const c_info_s *in);
+int c_json_load(cJSON **out, char const *in);
+int c_json_export_info(cJSON const *in, c_info_s *out);
+int c_json_import_info(cJSON **out, c_info_s const *in);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __CIPHER_JSON_H__ */
+#endif /* CIPHER_JSON_H */

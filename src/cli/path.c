@@ -1,9 +1,3 @@
-/*!
- @file path.c
- @brief handling path
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
 #include "path.h"
 
 #if defined(_WIN32)
@@ -44,4 +38,19 @@ char *path_self(void)
         self[length] = 0;
     }
     return self;
+}
+
+char const *path_home(void)
+{
+    char const *home = getenv("HOME");
+    if (home)
+    {
+        return home;
+    }
+    home = getenv("USERPROFILE");
+    if (home)
+    {
+        return home;
+    }
+    return ".";
 }

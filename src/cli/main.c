@@ -1,9 +1,3 @@
-/*!
- @file main.c
- @brief main program
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
 #include "app.h"
 
 #include "path.h"
@@ -30,8 +24,8 @@ static struct
     char *import;
     char *export;
     cipher_s ctx[1];
-    c_word_s word[1];
-    c_info_s info[1];
+    a_vec_s word[1];
+    a_vec_s info[1];
     int option;
 } local[1] = {
     {
@@ -43,36 +37,10 @@ static struct
 };
 #pragma pack(pop)
 
-static void main_help(void)
-{
-    static const char help[] = "option: --import > -d[i] > -c > -s[i] > -i\n\
-  -i --index     using the index\n\
-  -s --search    search something\n\
-  -c --create    create something\n\
-  -d --delele    delete something\n\
-  -a --hash      hash algorithm\n\
-  -k --text      string(\"*\"->\"\")\n\
-  -t --type      number(0:email 1:digit 2:other)\n\
-  -m --misc      string\n\
-  -h --hint      string\n\
-  -l --length    number(0~128)\n\
-  -p --password  string(\"*\"->\"\")\n\
-  -f --filename  filename\n\
-     --import    filename\n\
-     --export    filename\n\
-hash algorithm: MD5(default)\n\
-     SHA1  SHA256  SHA224  BLAKE2S\n\
-     SHA3  SHA512  SHA384  BLAKE2B\n\
-Copyright (C) 2020-present tqfx, All rights reserved.";
-    str_t self = path_self();
-    printf("%s\n%s\n", self, help);
-    free(self);
-}
-
 static int main_app(void)
 {
 #if defined(_WIN32)
-    c_info_foreach(it, local->info)
+    a_vec_foreach(cipher_s, it, local->info)
     {
         if (cipher_get_text(it))
         {
@@ -93,9 +61,9 @@ static int main_app(void)
             exe[strlen(exe) - 4] = 0;
         }
 #endif /* _WIN32 */
-        str_s str[1] = {STR_NIL};
-        str_printf(str, "%s%s", exe, ".db");
-        local->file = str_exit(str);
+        a_str_s str[1] = {A_STR_NUL};
+        a_str_printf(str, "%s%s", exe, ".db");
+        local->file = a_str_exit(str);
         free(exe);
     }
 
@@ -143,39 +111,39 @@ static int main_app(void)
     else if ((local->option & (OPTION_SEARCH | OPTION_INDEX)) == OPTION_SEARCH)
     {
         OPTION_CLR(local->option, OPTION_SEARCH);
-        c_word_foreach(it, local->word)
+        a_vec_foreach(a_str_s, it, local->word)
         {
-            app_search_word_str(str_val(it));
+            app_search_word_str(a_str_ptr(it));
         }
-        c_info_foreach(it, local->info)
+        a_vec_foreach(cipher_s, it, local->info)
         {
             app_search_info_str(cipher_get_text(it));
         }
     }
-    else if (c_info_num(local->info) && OPTION_IS_SET(local->option, OPTION_INDEX))
+    else if (a_vec_num(local->info) && OPTION_IS_SET(local->option, OPTION_INDEX))
     {
         unsigned long ip = 0;
         unsigned long ik = 0;
         OPTION_CLR(local->option, OPTION_INDEX);
-        c_info_foreach(it, local->info)
+        a_vec_foreach(cipher_s, it, local->info)
         {
             ik = strtoul(cipher_get_text(it), 0, 0);
-            if (c_word_num(local->word))
+            if (a_vec_num(local->word))
             {
-                str_s *str = c_word_top(local->word);
-                ip = strtoul(str_val(str), 0, 0);
+                a_str_s *str = a_vec_top(a_str_s, local->word);
+                ip = strtoul(a_str_ptr(str), 0, 0);
             }
             app_exec_idx(ip, ik);
         }
     }
-    else if (c_info_num(local->info))
+    else if (a_vec_num(local->info))
     {
-        c_info_foreach(it, local->info)
+        a_vec_foreach(cipher_s, it, local->info)
         {
-            if (c_word_num(local->word))
+            if (a_vec_num(local->word))
             {
-                str_s *str = c_word_top(local->word);
-                app_exec(it, str_val(str));
+                a_str_s *str = a_vec_top(a_str_s, local->word);
+                app_exec(it, a_str_ptr(str));
             }
             else
             {
@@ -187,6 +155,32 @@ static int main_app(void)
     return app_exit();
 }
 
+static void main_help(void)
+{
+    static const char help[] = "option: --import > -d[i] > -c > -s[i] > -i\n\
+  -i --index     using the index\n\
+  -s --search    search something\n\
+  -c --create    create something\n\
+  -d --delete    delete something\n\
+  -a --hash      hash algorithm\n\
+  -k --text      string(\"*\"->\"\")\n\
+  -t --type      number(0:email 1:digit 2:other)\n\
+  -m --misc      string\n\
+  -h --hint      string\n\
+  -l --length    number(0~128)\n\
+  -p --password  string(\"*\"->\"\")\n\
+  -f --filename  filename\n\
+     --import    filename\n\
+     --export    filename\n\
+hash algorithm: MD5(default)\n\
+     SHA1  SHA256  SHA224  BLAKE2S\n\
+     SHA3  SHA512  SHA384  BLAKE2B\n\
+Copyright (C) 2020-present tqfx, All rights reserved.";
+    char *self = path_self();
+    printf("%s\n%s\n", self, help);
+    free(self);
+}
+
 static inline char *text_optarg(char *arg) { return (*arg != '*') ? arg : (arg + 1); }
 
 #if defined(_MSC_VER)
@@ -195,15 +189,15 @@ static inline char *text_optarg(char *arg) { return (*arg != '*') ? arg : (arg +
 
 int main(int argc, char *argv[])
 {
-    int ok = SUCCESS;
+    int ok = A_SUCCESS;
 
-    const char *shortopts = "Hiscda:k:h:m:t:l:p:f:";
-    const struct option longopts[] = {
+    char const *shortopts = "Hiscda:k:h:m:t:l:p:f:";
+    struct option const longopts[] = {
         {"help", no_argument, 0, 'H'},
         {"index", no_argument, 0, 'i'},
         {"search", no_argument, 0, 's'},
         {"create", no_argument, 0, 'c'},
-        {"delele", no_argument, 0, 'd'},
+        {"delete", no_argument, 0, 'd'},
         {"hash", required_argument, 0, 'a'},
         {"text", required_argument, 0, 'k'},
         {"hint", required_argument, 0, 'h'},
@@ -226,8 +220,8 @@ int main(int argc, char *argv[])
     /* init */
     {
         cipher_ctor(local->ctx);
-        c_word_ctor(local->word);
-        c_info_ctor(local->info);
+        a_vec_ctor(local->word, sizeof(a_str_s));
+        a_vec_ctor(local->info, sizeof(cipher_s));
     }
 
     while (((void)(ok = getopt_long(argc, argv, shortopts, longopts, &optind)), ok) != -1)
@@ -269,11 +263,10 @@ int main(int argc, char *argv[])
             {
                 cipher_get_misc(local->ctx) = 0;
             }
-            cipher_get_text(local->ctx) = text_optarg(optarg);
-            if (c_info_add(local->info, local->ctx))
-            {
-                fprintf(stderr, "%s + %s!\n", cipher_get_text(local->ctx), s_failure);
-            }
+            local->ctx->text = text_optarg(optarg);
+            cipher_s *ctx = a_vec_push(cipher_s, local->info);
+            cipher_ctor(ctx);
+            cipher_copy(ctx, local->ctx);
         }
         break;
         case 'a':
@@ -293,18 +286,19 @@ int main(int argc, char *argv[])
         break;
         case 't':
         {
-            cipher_get_type(local->ctx) = (uint_t)strtoul(optarg, 0, 0);
+            cipher_get_type(local->ctx) = (unsigned int)strtoul(optarg, 0, 0);
         }
         break;
         case 'l':
         {
-            cipher_get_size(local->ctx) = (uint_t)strtoul(optarg, 0, 0);
+            cipher_get_size(local->ctx) = (unsigned int)strtoul(optarg, 0, 0);
         }
         break;
         case 'p':
         {
-            str_s *str = c_word_push(local->word);
-            str_puts(str, text_optarg(optarg));
+            a_str_s *str = a_vec_push(a_str_s, local->word);
+            a_str_ctor(str);
+            a_str_puts(str, text_optarg(optarg));
         }
         break;
         case 'f':
@@ -339,9 +333,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (c_info_num(local->info))
+    if (a_vec_num(local->info))
     {
-        cipher_s *ctx = c_info_top(local->info);
+        cipher_s *ctx = a_vec_top(cipher_s, local->info);
         if (cipher_get_hash(local->ctx))
         {
             cipher_set_hash(ctx, cipher_get_hash(local->ctx));
@@ -362,8 +356,8 @@ int main(int argc, char *argv[])
 
     /* exit */
     {
-        c_word_dtor(local->word);
-        c_info_dtor(local->info);
+        a_vec_dtor(local->word, (void (*)(a_vptr_t))a_str_dtor);
+        a_vec_dtor(local->info, (void (*)(a_vptr_t))cipher_dtor);
         free(local->export);
         local->export = 0;
         free(local->import);

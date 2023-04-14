@@ -1,11 +1,5 @@
-/*!
- @file path.h
- @brief handling path
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
-#ifndef __PATH_H__
-#define __PATH_H__
+#ifndef PATH_H
+#define PATH_H
 
 #include <stdlib.h>
 
@@ -14,9 +8,10 @@ extern "C" {
 #endif /* __cplusplus */
 
 char *path_self(void);
+char const *path_home(void);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __PATH_H__ */
+#endif /* PATH_H */

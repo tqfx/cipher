@@ -1,11 +1,5 @@
-/*!
- @file convert.h
- @brief code conversion
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
-#ifndef __CONVERT_H__
-#define __CONVERT_H__
+#ifndef CONVERT_H
+#define CONVERT_H
 
 #include <stdlib.h>
 
@@ -26,10 +20,10 @@ extern "C" {
 */
 #if defined(_WIN32)
 int code_convert(char **out, unsigned int out_charset,
-                 const void *in, unsigned int in_charset);
+                 void const *in, unsigned int in_charset);
 #else /* !_WIN32 */
-int code_convert(char **out, const char *out_charset,
-                 const void *in, const char *in_charset);
+int code_convert(char **out, char const *out_charset,
+                 void const *in, char const *in_charset);
 #endif /* _WIN32 */
 
 /*!
@@ -41,7 +35,7 @@ int code_convert(char **out, const char *out_charset,
   @retval -1 failure
   @retval 0 success
 */
-int code_to_utf8(char **out, const void *in);
+int code_to_utf8(char **out, void const *in);
 
 /*!
  @brief utf-8 transcoding code
@@ -52,7 +46,7 @@ int code_to_utf8(char **out, const void *in);
   @retval -1 failure
   @retval 0 success
 */
-int code_utf8_to(char **out, const void *in);
+int code_utf8_to(char **out, void const *in);
 
 /*!
  @brief utf-8 transcoding gbk
@@ -63,7 +57,7 @@ int code_utf8_to(char **out, const void *in);
   @retval -1 failure
   @retval 0 success
 */
-int utf8_gbk(char **out, const void *in);
+int utf8_gbk(char **out, void const *in);
 
 /*!
  @brief gbk transcoding utf-8
@@ -74,10 +68,10 @@ int utf8_gbk(char **out, const void *in);
   @retval -1 failure
   @retval 0 success
 */
-int gbk_utf8(char **out, const void *in);
+int gbk_utf8(char **out, void const *in);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __CONVERT_H__ */
+#endif /* CONVERT_H */

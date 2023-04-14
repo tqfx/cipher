@@ -1,9 +1,3 @@
-/*!
- @file clipboard.c
- @brief clipboard
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
 #include "clipboard.h"
 
 #include <string.h>
@@ -20,7 +14,7 @@
 static UINT clipboard_uformat = (sizeof(TCHAR) == sizeof(WCHAR)) ? CF_UNICODETEXT : CF_TEXT;
 #endif /* _WIN32 */
 
-int clipboard_set(const void *pdata, size_t nbyte)
+int clipboard_set(void const *pdata, size_t nbyte)
 {
     (void)pdata;
     (void)nbyte;
@@ -48,9 +42,9 @@ int clipboard_set(const void *pdata, size_t nbyte)
     return ret;
 }
 
-int clipboard_sets(const void *in)
+int clipboard_sets(void const *in)
 {
-    return clipboard_set(in, strlen((const char *)in) + 1);
+    return clipboard_set(in, strlen((char const *)in) + 1);
 }
 
 int clipboard_get(char **out)

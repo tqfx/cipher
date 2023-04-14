@@ -18,7 +18,7 @@ target("cipher")
         add_deps("getopt")
     end
 
-    add_deps("sqlite3", "cjson")
+    add_deps("sqlite3", "cjson", "a")
 
     set_warnings("everything")
 

@@ -1,14 +1,12 @@
 /*!
  @file cipher.h
  @brief cipher core
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
-#ifndef __CIPHER_CIPHER_H__
-#define __CIPHER_CIPHER_H__
+#ifndef CIPHER_CIPHER_H
+#define CIPHER_CIPHER_H
 
-#include "a/output.h"
-
+#include "a/a.h"
 #include <stdlib.h>
 
 #define CIPHER_OUTSIZ 0x80
@@ -23,14 +21,15 @@ typedef enum cipher_e
 
 typedef struct cipher_s
 {
-    str_t text;
-    str_t hash;
-    str_t hint;
-    str_t misc;
-    uint_t type;
-    uint_t size;
+    char *text;
+    char *hash;
+    char *hint;
+    char *misc;
+    unsigned int type;
+    unsigned int size;
 } cipher_s;
 
+#define cipher_get_time(ctx) (ctx)->time
 #define cipher_get_text(ctx) (ctx)->text
 #define cipher_get_hash(ctx) (ctx)->hash
 #define cipher_get_hint(ctx) (ctx)->hint
@@ -42,29 +41,72 @@ typedef struct cipher_s
 extern "C" {
 #endif /* __cplusplus */
 
+/*!
+ @brief convert hexadecimal to decimal.
+ @param[in] x '0'-'9', 'a'-'f', 'A'-'F'
+ @return 0 ~ 15
+  @retval -1 failure
+*/
+int xdigit(int x);
+
+/*!
+ @brief convert a string to a lower string.
+ @param[in] pdata points to data to convert.
+ @param[in] nbyte length of data to convert.
+ @param[in,out] out points to buffer that holds the string.
+ @return a pointer to the string.
+ @note When out is 0, you need to use free to release the memory.
+*/
+void *lower(void const *pdata, size_t nbyte, void *out);
+
+/*!
+ @brief convert a string to a upper string.
+ @param[in] pdata points to data to convert.
+ @param[in] nbyte length of data to convert.
+ @param[in,out] out points to buffer that holds the string.
+ @return a pointer to the string.
+ @note When out is 0, you need to use free to release the memory.
+*/
+void *upper(void const *pdata, size_t nbyte, void *out);
+
+/*!
+ @brief convert a digest to a string.
+ @param[in] pdata points to data to convert.
+ @param[in] nbyte length of data to convert.
+ @param[in] cases select the converted case.
+  @arg 0 lower
+  @arg 1 upper
+ @param[in,out] out points to buffer that holds the string.
+ @return a pointer to the string.
+ @note When out is 0, you need to use free to release the memory.
+*/
+void *digest(void const *pdata, size_t nbyte, unsigned int cases, void *out);
+void *digest_lower(void const *pdata, size_t nbyte, void *out);
+void *digest_upper(void const *pdata, size_t nbyte, void *out);
+
 cipher_s *cipher_new(void);
 void cipher_die(cipher_s *ctx);
 
 void cipher_ctor(cipher_s *ctx);
 void cipher_dtor(cipher_s *ctx);
 
-int cipher_set_hint(cipher_s *ctx, cptr_t hint);
-int cipher_set_misc(cipher_s *ctx, cptr_t misc);
-int cipher_set_text(cipher_s *ctx, cptr_t text);
-int cipher_set_hash(cipher_s *ctx, cptr_t hash);
-void cipher_set_type(cipher_s *ctx, uint_t type);
-void cipher_set_size(cipher_s *ctx, uint_t size);
+int cipher_set_hint(cipher_s *ctx, void const *hint);
+int cipher_set_misc(cipher_s *ctx, void const *misc);
+int cipher_set_text(cipher_s *ctx, void const *text);
+int cipher_set_hash(cipher_s *ctx, void const *hash);
+void cipher_set_type(cipher_s *ctx, unsigned int type);
+void cipher_set_size(cipher_s *ctx, unsigned int size);
 
-int cipher_copy(cipher_s *ctx, const cipher_s *obj);
+int cipher_copy(cipher_s *ctx, cipher_s const *obj);
 cipher_s *cipher_move(cipher_s *ctx, cipher_s *obj);
 
-void cipher_v2_init(cptr_t s0, cptr_t s1, cptr_t s2, cptr_t s3);
+void cipher_v2_init(void const *s0, void const *s1, void const *s2, void const *s3);
 
-int cipher_v1(const cipher_s *ctx, cstr_t word, str_t *out);
-int cipher_v2(const cipher_s *ctx, cstr_t word, str_t *out);
+int cipher_v1(cipher_s const *ctx, char const *word, char **out);
+int cipher_v2(cipher_s const *ctx, char const *word, char **out);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __CIPHER_CIPHER_H__ */
+#endif /* CIPHER_CIPHER_H */

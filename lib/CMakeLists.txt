@@ -1,3 +1,5 @@
+add_subdirectory(liba)
+
 if(NOT HAS_CJSON_H)
   add_subdirectory(cjson)
 endif()

@@ -1,8 +1,3 @@
-/*!
- @file console.c
- @brief console
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
 #include "console.h"
 
 #include <stdarg.h>
@@ -87,7 +82,7 @@ int console_printf(unsigned int num, ...)
     {
         unsigned int x = va_arg(ap, unsigned int);
         console_text_set(x, x >> 4);
-        const char *str = va_arg(ap, const char *);
+        char const *str = va_arg(ap, char const *);
         if (str)
         {
             ret += printf("%s", str);
@@ -98,14 +93,14 @@ int console_printf(unsigned int num, ...)
     return ret;
 }
 
-int console_vprint(const char *sep, unsigned int num, va_list ap)
+int console_vprint(char const *sep, unsigned int num, va_list ap)
 {
     int ret = 0;
     while (num--)
     {
         unsigned int x = va_arg(ap, unsigned int);
         console_text_set(x, x >> 4);
-        const char *str = va_arg(ap, const char *);
+        char const *str = va_arg(ap, char const *);
         if (str)
         {
             ret += printf("%s", str);
@@ -119,7 +114,7 @@ int console_vprint(const char *sep, unsigned int num, va_list ap)
     return ret;
 }
 
-int console_print(const char *sep, unsigned int num, ...)
+int console_print(char const *sep, unsigned int num, ...)
 {
     va_list ap;
     va_start(ap, num);
@@ -128,7 +123,7 @@ int console_print(const char *sep, unsigned int num, ...)
     return ret;
 }
 
-int console_println(const char *sep, unsigned int num, ...)
+int console_println(char const *sep, unsigned int num, ...)
 {
     va_list ap;
     va_start(ap, num);
@@ -138,7 +133,7 @@ int console_println(const char *sep, unsigned int num, ...)
     return ret;
 }
 
-int console_aprint(const char *sep, unsigned int num, unsigned int *x, const char **s)
+int console_aprint(char const *sep, unsigned int num, unsigned int *x, char const **s)
 {
     int ret = 0;
     while (num--)
@@ -159,7 +154,7 @@ int console_aprint(const char *sep, unsigned int num, unsigned int *x, const cha
     return ret;
 }
 
-int console_aprintln(const char *sep, unsigned int num, unsigned int *x, const char **s)
+int console_aprintln(char const *sep, unsigned int num, unsigned int *x, char const **s)
 {
     int ret = console_aprint(sep, num, x, s) + 1;
     putchar('\n');

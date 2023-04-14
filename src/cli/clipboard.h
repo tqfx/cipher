@@ -1,11 +1,5 @@
-/*!
- @file clipboard.h
- @brief clipboard
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
-#ifndef __CLIPBOARD_H__
-#define __CLIPBOARD_H__
+#ifndef CLIPBOARD_H
+#define CLIPBOARD_H
 
 #include <stdlib.h>
 
@@ -21,7 +15,7 @@ extern "C" {
   @retval -1 failure
   @retval 0 success
 */
-int clipboard_set(const void *pdata, size_t nbyte);
+int clipboard_set(void const *pdata, size_t nbyte);
 
 /*!
  @brief Set string to clipboard
@@ -30,7 +24,7 @@ int clipboard_set(const void *pdata, size_t nbyte);
   @retval -1 failure
   @retval 0 success
 */
-int clipboard_sets(const void *in);
+int clipboard_sets(void const *in);
 
 /*!
  @brief Get data of clipboard
@@ -42,7 +36,7 @@ int clipboard_sets(const void *in);
 int clipboard_get(char **out);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __CLIPBOARD_H__ */
+#endif /* CLIPBOARD_H */

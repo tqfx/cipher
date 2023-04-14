@@ -1,11 +1,5 @@
-/*!
- @file app.h
- @brief application
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
-#ifndef __APP_H__
-#define __APP_H__
+#ifndef APP_H
+#define APP_H
 
 #include "cipher/sqlite.h"
 
@@ -16,34 +10,34 @@
 extern "C" {
 #endif /* __cplusplus */
 
-void app_log(uint_t n, ...);
-int app_exec(const cipher_s *info, cstr_t word);
+void app_log(unsigned int n, ...);
+int app_exec(cipher_s const *info, char const *word);
 
-int app_init(cstr_t fname);
+int app_init(char const *fname);
 int app_exit(void);
 
-void app_search_word_str(cptr_t word);
-void app_search_info_str(cptr_t info);
-void app_search_word_idx(const c_word_s *word);
-void app_search_info_idx(const c_info_s *info);
+void app_search_word_str(void const *word);
+void app_search_info_str(void const *info);
+void app_search_word_idx(a_vec_s const *word);
+void app_search_info_idx(a_vec_s const *info);
 
-int app_create_word(const c_word_s *word);
-int app_create_info(const c_info_s *info);
+int app_create_word(a_vec_s const *word);
+int app_create_info(a_vec_s const *info);
 
-int app_delete_word(const c_word_s *word);
-int app_delete_info(const c_info_s *info);
-int app_delete_word_idx(const c_word_s *word);
-int app_delete_info_idx(const c_info_s *info);
+int app_delete_word(a_vec_s const *word);
+int app_delete_info(a_vec_s const *info);
+int app_delete_word_idx(a_vec_s const *word);
+int app_delete_info_idx(a_vec_s const *info);
 
 int app_exec_idx(size_t word, size_t info);
-int app_exec_ctx(const cipher_s *ctx);
+int app_exec_ctx(cipher_s const *ctx);
 
-int app_convert(cstr_t in, cstr_t out);
-int app_import(cstr_t fname);
-int app_export(cstr_t fname);
+int app_convert(char const *in, char const *out);
+int app_import(char const *fname);
+int app_export(char const *fname);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
 static const char s_missing[] = "missing";
@@ -51,4 +45,4 @@ static const char s_failure[] = "failure";
 static const char s_success[] = "success";
 static const char s_warning[] = "warning";
 
-#endif /* __APP_H__ */
+#endif /* APP_H */

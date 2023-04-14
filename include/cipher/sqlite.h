@@ -1,11 +1,10 @@
 /*!
  @file sqlite.h
  @brief cipher sqlite
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
 */
 
-#ifndef __CIPHER_SQLITE_H__
-#define __CIPHER_SQLITE_H__
+#ifndef CIPHER_SQLITE_H
+#define CIPHER_SQLITE_H
 
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
@@ -40,13 +39,13 @@ int c_sqlite_delete_info(sqlite3 *db);
 
 int c_sqlite_out_word(sqlite3 *db, c_word_s *out);
 int c_sqlite_out_info(sqlite3 *db, c_info_s *out);
-int c_sqlite_add_word(sqlite3 *db, const c_word_s *in);
-int c_sqlite_add_info(sqlite3 *db, const c_info_s *in);
-int c_sqlite_del_word(sqlite3 *db, const c_word_s *in);
-int c_sqlite_del_info(sqlite3 *db, const c_info_s *in);
+int c_sqlite_add_word(sqlite3 *db, c_word_s const *in);
+int c_sqlite_add_info(sqlite3 *db, c_info_s const *in);
+int c_sqlite_del_word(sqlite3 *db, c_word_s const *in);
+int c_sqlite_del_info(sqlite3 *db, c_info_s const *in);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __CIPHER_SQLITE_H__ */
+#endif /* CIPHER_SQLITE_H */

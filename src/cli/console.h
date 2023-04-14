@@ -1,11 +1,5 @@
-/*!
- @file console.h
- @brief console
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
-#ifndef __CONSOLE_H__
-#define __CONSOLE_H__
+#ifndef CONSOLE_H
+#define CONSOLE_H
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -30,14 +24,14 @@ void console_text_reset(void);
 unsigned int console_text_set(unsigned int ft, unsigned int bg);
 
 int console_printf(unsigned int num, ...);
-int console_vprint(const char *sep, unsigned int num, va_list ap);
-int console_print(const char *sep, unsigned int num, ...);
-int console_println(const char *sep, unsigned int num, ...);
-int console_aprint(const char *sep, unsigned int num, unsigned int *x, const char **s);
-int console_aprintln(const char *sep, unsigned int num, unsigned int *x, const char **s);
+int console_vprint(char const *sep, unsigned int num, va_list ap);
+int console_print(char const *sep, unsigned int num, ...);
+int console_println(char const *sep, unsigned int num, ...);
+int console_aprint(char const *sep, unsigned int num, unsigned int *x, char const **s);
+int console_aprintln(char const *sep, unsigned int num, unsigned int *x, char const **s);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __CONSOLE_H__ */
+#endif /* CONSOLE_H */

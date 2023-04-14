@@ -1,9 +1,3 @@
-/*!
- @file convert.c
- @brief code conversion
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
 #include "convert.h"
 
 #if defined(_WIN32)
@@ -23,15 +17,15 @@
 
 #if defined(_WIN32)
 int code_convert(char **out, unsigned int out_charset,
-                 const void *in, unsigned int in_charset)
+                 void const *in, unsigned int in_charset)
 {
-    int n = MultiByteToWideChar(in_charset, 0, (const char *)in, -1, 0, 0);
+    int n = MultiByteToWideChar(in_charset, 0, (char const *)in, -1, 0, 0);
     if (n == 0)
     {
         return ~0;
     }
     wchar_t *str = (wchar_t *)malloc(sizeof(wchar_t) * (size_t)n);
-    MultiByteToWideChar(in_charset, 0, (const char *)in, -1, str, n);
+    MultiByteToWideChar(in_charset, 0, (char const *)in, -1, str, n);
     do
     {
         n = WideCharToMultiByte(out_charset, 0, str, -1, 0, 0, 0, 0);
@@ -48,20 +42,20 @@ int code_convert(char **out, unsigned int out_charset,
     return n;
 }
 #else /* !_WIN32 */
-int code_convert(char **out, const char *out_charset,
-                 const void *in, const char *in_charset)
+int code_convert(char **out, char const *out_charset,
+                 void const *in, char const *in_charset)
 {
     if (setlocale(LC_CTYPE, in_charset) == 0)
     {
         return ~0;
     }
-    size_t n = mbstowcs(0, (const char *)in, 0);
+    size_t n = mbstowcs(0, (char const *)in, 0);
     if (n == 0)
     {
         return ~0;
     }
     wchar_t *str = (wchar_t *)malloc(sizeof(wchar_t) * n);
-    mbstowcs(str, (const char *)in, n);
+    mbstowcs(str, (char const *)in, n);
     int ret = ~0;
     do
     {
@@ -84,7 +78,7 @@ int code_convert(char **out, const char *out_charset,
 }
 #endif /* _WIN32 */
 
-int utf8_gbk(char **out, const void *in)
+int utf8_gbk(char **out, void const *in)
 {
 #if defined(_WIN32)
     return code_convert(out, 936, in, 65001);
@@ -93,7 +87,7 @@ int utf8_gbk(char **out, const void *in)
 #endif /* _WIN32 */
 }
 
-int gbk_utf8(char **out, const void *in)
+int gbk_utf8(char **out, void const *in)
 {
 #if defined(_WIN32)
     return code_convert(out, 65001, in, 936);
@@ -102,7 +96,7 @@ int gbk_utf8(char **out, const void *in)
 #endif /* _WIN32 */
 }
 
-int code_to_utf8(char **out, const void *in)
+int code_to_utf8(char **out, void const *in)
 {
 #if defined(_WIN32)
     return code_convert(out, 65001, in, GetOEMCP());
@@ -112,7 +106,7 @@ int code_to_utf8(char **out, const void *in)
 #endif /* _WIN32 */
 }
 
-int code_utf8_to(char **out, const void *in)
+int code_utf8_to(char **out, void const *in)
 {
 #if defined(_WIN32)
     return code_convert(out, GetOEMCP(), in, 65001);

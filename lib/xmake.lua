@@ -1,3 +1,5 @@
+includes("liba")
+
 target("cjson")
 
     set_default(false)

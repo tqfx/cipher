@@ -1,14 +1,7 @@
-/*!
- @file app.c
- @brief application
- @copyright Copyright (C) 2020-present tqfx, All rights reserved.
-*/
-
 #include "app.h"
-
 #include "clipboard.h"
-
 #include <assert.h>
+#include <time.h>
 
 // clang-format off
 #define TEXT_RED       CONSOLE_TEXT_RED
@@ -18,13 +11,13 @@
 #define TEXT_DEFAULT   CONSOLE_TEXT_DEFAULT
 // clang-format on
 
-static void app_log3(cstr_t obj, uint_t color, cstr_t local, cstr_t info)
+static void app_log3(char const *obj, unsigned int color, char const *local, char const *info)
 {
     app_log(3, TEXT_WHITE, obj, color, local, TEXT_TURQUOISE, info);
 }
 
 #define TITLE_WORD "INDEX P\n"
-static void app_print_word(size_t index, cstr_t word)
+static void app_print_word(size_t index, char const *word)
 {
     char buf[1 << 4];
     sprintf(buf, "%05zu", index);
@@ -32,9 +25,9 @@ static void app_print_word(size_t index, cstr_t word)
 }
 
 #define TITLE_INFO "INDEX T LEN HASHMAC K\n"
-static void app_print_info(size_t index, const cipher_s *info)
+static void app_print_info(size_t index, cipher_s const *info)
 {
-    str_t text = info->text;
+    char *text = info->text;
 #if defined(_WIN32)
     code_utf8_to(&text, info->text);
 #endif /* _WIN32 */
@@ -53,7 +46,7 @@ static void app_print_info(size_t index, const cipher_s *info)
 #endif /* _WIN32 */
 }
 
-void app_log(uint_t num, ...)
+void app_log(unsigned int num, ...)
 {
     va_list ap;
     va_start(ap, num);
@@ -62,7 +55,7 @@ void app_log(uint_t num, ...)
     va_end(ap);
 }
 
-int app_exec(const cipher_s *info, cstr_t word)
+int app_exec(cipher_s const *info, char const *word)
 {
     assert(info);
     assert(word);
@@ -70,10 +63,10 @@ int app_exec(const cipher_s *info, cstr_t word)
     if ((info->type == CIPHER_OTHER) && (info->misc == 0))
     {
         app_log(2, TEXT_RED, s_missing, TEXT_TURQUOISE, "misc");
-        return FAILURE;
+        return A_FAILURE;
     }
 
-    str_t out = 0;
+    char *out = 0;
     if (cipher_v1(info, word, &out))
     {
         if ((out == 0) || (strlen(out) == 0))
@@ -88,12 +81,12 @@ int app_exec(const cipher_s *info, cstr_t word)
         {
             app_log(2, TEXT_RED, s_failure, TEXT_TURQUOISE, "exec");
         }
-        return FAILURE;
+        return A_FAILURE;
     }
 
 #if defined(_WIN32)
     clipboard_sets(out);
-    str_t text = 0;
+    char *text = 0;
     code_utf8_to(&text, info->text);
     app_log(2, TEXT_GREEN, "ok", TEXT_TURQUOISE, text);
     free(text);
@@ -103,7 +96,7 @@ int app_exec(const cipher_s *info, cstr_t word)
 
     free(out);
 
-    return SUCCESS;
+    return A_SUCCESS;
 }
 
 #define STATUS_ZERO 0
@@ -121,7 +114,7 @@ int app_exec(const cipher_s *info, cstr_t word)
 static struct
 {
     sqlite3 *db;
-    cstr_t fname;
+    char const *fname;
     c_word_s word[1];
     c_info_s info[1];
     int status;
@@ -134,13 +127,13 @@ static struct
 };
 #pragma pack(pop)
 
-int app_init(cstr_t fname)
+int app_init(char const *fname)
 {
     assert(fname);
 
     if (STATUS_IS_SET(local->status, STATUS_INIT))
     {
-        return FAILURE;
+        return A_FAILURE;
     }
 
     sqlite3_initialize();
@@ -170,7 +163,7 @@ int app_exit(void)
 {
     if (STATUS_IS_CLR(local->status, STATUS_INIT))
     {
-        return FAILURE;
+        return A_FAILURE;
     }
 
     if (STATUS_IS_SET(local->status, STATUS_MODP))
@@ -199,59 +192,61 @@ int app_exit(void)
     return sqlite3_shutdown();
 }
 
-void app_search_word_str(cptr_t word)
+void app_search_word_str(void const *word)
 {
     printf(TITLE_WORD);
-    cstr_t str = word ? (cstr_t)word : "";
-    c_word_forenum(i, local->word)
+    char const *str = word ? (char const *)word : "";
+    a_vec_forenum(i, local->word)
     {
-        str_s *it = c_word_at(local->word, i);
-        if (str_len(it) && strstr(str_val(it), str))
+        a_str_s *it = a_vec_at_(a_str_s, local->word, i);
+        if (a_str_len(it) && strstr(a_str_ptr(it), str))
         {
-            app_print_word(i, str_val(it));
+            app_print_word(i, a_str_ptr(it));
         }
     }
 }
 
-void app_search_info_str(cptr_t info)
+void app_search_info_str(void const *info)
 {
+    size_t idx = 0;
     printf(TITLE_INFO);
-    cstr_t str = info ? (cstr_t)info : "";
-    c_info_forenum(i, local->info)
+    char const *str = info ? (char const *)info : "";
+    a_avl_foreach(cur, local->info->root)
     {
-        cipher_s *it = c_info_at(local->info, i);
+        cipher_s *it = a_avl_entry(cur, info_s, node)->cipher;
         if (cipher_get_text(it) && strstr(cipher_get_text(it), str))
         {
-            app_print_info(i, it);
+            app_print_info(idx, it);
         }
+        ++idx;
     }
 }
 
-void app_search_word_idx(const c_word_s *word)
+void app_search_word_idx(a_vec_s const *word)
 {
     assert(word);
-    if (c_word_num(word))
+    if (a_vec_num(word))
     {
         printf(TITLE_WORD);
     }
-    c_word_foreach(it, word)
+    a_vec_foreach(a_str_s, it, word)
     {
-        unsigned long idx = strtoul(str_val(it), 0, 0);
-        if (idx < c_word_num(local->word))
+        unsigned long idx = strtoul(a_str_ptr(it), 0, 0);
+        if (idx < a_vec_num(local->word))
         {
-            app_print_word(idx, str_val(it));
+            app_print_word(idx, a_str_ptr(it));
         }
     }
 }
 
-void app_search_info_idx(const c_info_s *info)
+void app_search_info_idx(a_vec_s const *info)
 {
     assert(info);
-    if (c_info_num(info))
+    if (a_vec_num(info))
     {
         printf(TITLE_INFO);
     }
-    c_info_foreach(it, info)
+    a_vec_foreach(cipher_s, it, info)
     {
         unsigned long idx = strtoul(cipher_get_text(it), 0, 0);
         if (idx < c_info_num(local->info))
@@ -261,36 +256,36 @@ void app_search_info_idx(const c_info_s *info)
     }
 }
 
-int app_create_word(const c_word_s *word)
+int app_create_word(a_vec_s const *word)
 {
     assert(word);
-    int ok = FAILURE;
-    c_word_foreach(it, word)
+    int ok = A_FAILURE;
+    a_vec_foreach(a_str_s, it, word)
     {
-        if ((str_len(it) == 0) || (strlen(str_val(it)) == 0))
+        if ((a_str_len(it) == 0) || (strlen(a_str_ptr(it)) == 0))
         {
             app_log3(local->fname, TEXT_RED, s_missing, "p");
             break;
         }
         ok = c_word_add(local->word, it);
-        if (ok == SUCCESS)
+        if (ok == A_SUCCESS)
         {
             STATUS_SET(local->status, STATUS_MODP);
-            app_log3(local->fname, TEXT_GREEN, s_success, str_val(it));
+            app_log3(local->fname, TEXT_GREEN, s_success, a_str_ptr(it));
         }
         else
         {
-            app_log3(local->fname, TEXT_RED, s_failure, str_val(it));
+            app_log3(local->fname, TEXT_RED, s_failure, a_str_ptr(it));
         }
     }
     return ok;
 }
 
-int app_create_info(const c_info_s *info)
+int app_create_info(a_vec_s const *info)
 {
     assert(info);
-    int ok = FAILURE;
-    c_info_foreach(it, info)
+    int ok = A_FAILURE;
+    a_vec_foreach(cipher_s, it, info)
     {
         if ((cipher_get_type(it) == CIPHER_OTHER) && (cipher_get_misc(it) == 0))
         {
@@ -302,10 +297,12 @@ int app_create_info(const c_info_s *info)
             app_log3(local->fname, TEXT_RED, s_missing, "k");
             break;
         }
-        ok = c_info_add(local->info, it);
-        if (ok == SUCCESS)
+        info_s *ctx = c_info_add(local->info, it->text);
+        if (ctx)
         {
             STATUS_SET(local->status, STATUS_MODK);
+            cipher_copy(ctx->cipher, it);
+            ctx->time = time(NULL) + LONG_MIN;
             app_exec_ctx(it);
         }
         else
@@ -316,34 +313,34 @@ int app_create_info(const c_info_s *info)
     return ok;
 }
 
-int app_delete_word(const c_word_s *word)
+int app_delete_word(a_vec_s const *word)
 {
     assert(word);
-    int ok = FAILURE;
-    c_word_foreach(it, word)
+    int ok = A_FAILURE;
+    a_vec_foreach(a_str_s, it, word)
     {
         ok = c_word_del(local->word, it);
-        if (ok == SUCCESS)
+        if (ok == A_SUCCESS)
         {
             STATUS_SET(local->status, STATUS_MODP);
-            app_log3(local->fname, TEXT_GREEN, s_success, str_val(it));
+            app_log3(local->fname, TEXT_GREEN, s_success, a_str_ptr(it));
         }
         else
         {
-            app_log3(local->fname, TEXT_RED, s_failure, str_val(it));
+            app_log3(local->fname, TEXT_RED, s_failure, a_str_ptr(it));
         }
     }
     return ok;
 }
 
-int app_delete_info(const c_info_s *info)
+int app_delete_info(a_vec_s const *info)
 {
     assert(info);
-    int ok = FAILURE;
-    c_info_foreach(it, info)
+    int ok = A_FAILURE;
+    a_vec_foreach(cipher_s, it, info)
     {
-        ok = c_info_del(local->info, it);
-        if (ok == SUCCESS)
+        info_s *ctx = c_info_del(local->info, it->text);
+        if (ctx)
         {
             STATUS_SET(local->status, STATUS_MODK);
             app_log3(local->fname, TEXT_GREEN, s_success, cipher_get_text(it));
@@ -356,53 +353,53 @@ int app_delete_info(const c_info_s *info)
     return ok;
 }
 
-int app_delete_word_idx(const c_word_s *word)
+int app_delete_word_idx(a_vec_s const *word)
 {
     assert(word);
-    int ok = FAILURE;
-    c_word_foreach(it, word)
+    int ok = A_FAILURE;
+    a_vec_foreach(a_str_s, it, word)
     {
-        str_s *str = 0;
-        unsigned long x = strtoul(str_val(it), 0, 0);
-        if (x < c_word_num(local->word) &&
-            ((void)(str = c_word_at(local->word, x)), str_len(str)))
+        a_str_s *str = 0;
+        unsigned long x = strtoul(a_str_ptr(it), 0, 0);
+        if (x < a_vec_num(local->word) &&
+            ((void)(str = a_vec_at_(a_str_s, local->word, x)), a_str_len(str)))
         {
             STATUS_SET(local->status, STATUS_MODP);
-            app_print_word(x, str_val(str));
-            str_dtor(str);
-            ok = SUCCESS;
+            app_print_word(x, a_str_ptr(str));
+            a_str_dtor(str);
+            ok = A_SUCCESS;
         }
     }
     return ok;
 }
 
-int app_delete_info_idx(const c_info_s *info)
+int app_delete_info_idx(a_vec_s const *info)
 {
     assert(info);
-    int ok = FAILURE;
-    c_info_foreach(it, info)
+    int ok = A_FAILURE;
+    a_vec_foreach(cipher_s, it, info)
     {
         cipher_s *ctx = 0;
         unsigned long x = strtoul(cipher_get_text(it), 0, 0);
         if (x < c_info_num(local->info) &&
-            ((void)(ctx = c_info_at(local->info, x)), cipher_get_text(ctx)))
+            ((void)(ctx = c_info_at(local->info, x)->cipher), cipher_get_text(ctx)))
         {
             STATUS_SET(local->status, STATUS_MODK);
             app_print_info(x, ctx);
             cipher_dtor(ctx);
-            ok = SUCCESS;
+            ok = A_SUCCESS;
         }
     }
     return ok;
 }
 
-int app_exec_ctx(const cipher_s *ctx)
+int app_exec_ctx(cipher_s const *ctx)
 {
     assert(ctx);
-    int ok = FAILURE;
-    if (c_word_num(local->word))
+    int ok = A_FAILURE;
+    if (a_vec_num(local->word))
     {
-        ok = app_exec(ctx, str_val(c_word_ptr(local->word)));
+        ok = app_exec(ctx, a_str_ptr(a_vec_ptr(a_str_s, local->word)));
     }
     else
     {
@@ -413,14 +410,14 @@ int app_exec_ctx(const cipher_s *ctx)
 
 int app_exec_idx(size_t word, size_t info)
 {
-    int ok = FAILURE;
+    int ok = A_FAILURE;
 
-    if (c_word_num(local->word) == 0)
+    if (a_vec_num(local->word) == 0)
     {
         app_log3(local->fname, TEXT_RED, s_missing, "p");
         goto exit;
     }
-    else if (word >= c_word_num(local->word))
+    else if (word >= a_vec_num(local->word))
     {
         app_log3(local->fname, TEXT_RED, s_failure, "p");
         goto exit;
@@ -439,12 +436,12 @@ int app_exec_idx(size_t word, size_t info)
 
     if (word)
     {
-        c_word_swap(local->word, word, 0);
+        a_vec_swap(local->word, word, 0);
         STATUS_SET(local->status, STATUS_MODP);
     }
 
-    ok = app_exec(c_info_at(local->info, info),
-                  str_val(c_word_ptr(local->word)));
+    ok = app_exec(c_info_at(local->info, info)->cipher,
+                  a_str_ptr(a_vec_ptr(a_str_s, local->word)));
 
 exit:
     return ok;
@@ -453,9 +450,9 @@ exit:
 #include "cipher/json.h"
 #include "cipher/stream.h"
 
-static int app_import_(c_info_s *info, cstr_t in)
+static int app_import_(c_info_s *info, char const *in)
 {
-    int ok = FAILURE;
+    int ok = A_FAILURE;
 
     cJSON *json = 0;
     ok = c_json_load(&json, in);
@@ -478,7 +475,7 @@ static int app_import_(c_info_s *info, cstr_t in)
     return ok;
 }
 
-static int app_export_(c_info_s *info, cstr_t out)
+static int app_export_(c_info_s *info, char const *out)
 {
     if (strstr(out, ".db"))
     {
@@ -497,7 +494,7 @@ static int app_export_(c_info_s *info, cstr_t out)
 
     cJSON *json = 0;
     c_json_import_info(&json, info);
-    str_t str = cJSON_PrintUnformatted(json);
+    char *str = cJSON_PrintUnformatted(json);
     if (str)
     {
         stream_write(out, str, strlen(str));
@@ -505,15 +502,15 @@ static int app_export_(c_info_s *info, cstr_t out)
     }
     cJSON_Delete(json);
 
-    return SUCCESS;
+    return A_SUCCESS;
 }
 
-int app_convert(cstr_t in, cstr_t out)
+int app_convert(char const *in, char const *out)
 {
     assert(in);
     assert(out);
-    int ok = FAILURE;
-    c_info_s *info = c_info_new();
+    int ok = A_FAILURE;
+    c_info_s info[1] = {C_INFO_INIT};
     ok = app_import_(info, in);
     if (ok)
     {
@@ -525,21 +522,27 @@ int app_convert(cstr_t in, cstr_t out)
         goto exit;
     }
 exit:
-    c_info_die(info);
+    c_info_dtor(info);
     return ok;
 }
 
-int app_import(cstr_t fname)
+int app_import(char const *fname)
 {
     assert(fname);
-    c_info_s *info = c_info_new();
+    c_info_s info[1] = {C_INFO_INIT};
     int ok = app_import_(info, fname);
-    if (c_info_num(info) && ok == SUCCESS)
+    if (c_info_num(info) && ok == A_SUCCESS)
     {
         STATUS_SET(local->status, STATUS_MODK);
-        c_info_foreach(it, info)
+        a_avl_foreach(cur, info->root)
         {
-            c_info_add(local->info, it);
+            info_s *it = a_avl_entry(cur, info_s, node);
+            info_s *item = c_info_add(local->info, it->cipher->text);
+            if (it->time >= item->time)
+            {
+                cipher_copy(item->cipher, it->cipher);
+                item->time = it->time;
+            }
         }
         app_log3(local->fname, TEXT_GREEN, s_success, fname);
     }
@@ -547,11 +550,11 @@ int app_import(cstr_t fname)
     {
         app_log3(local->fname, TEXT_RED, s_failure, fname);
     }
-    c_info_die(info);
+    c_info_dtor(info);
     return ok;
 }
 
-int app_export(cstr_t fname)
+int app_export(char const *fname)
 {
     assert(fname);
     return app_export_(local->info, fname);

@@ -45,5 +45,37 @@ foreach(lang ${enabled_languages})
   endif()
 endforeach()
 
-add_subdirectory(cksum)
-add_subdirectory(cipher)
+set(TARGET_PREFIX test-)
+
+function(building target)
+  set(TARGET "${TARGET_PREFIX}${target}")
+  add_executable(${TARGET} ${ARGN})
+  set_target_properties(${TARGET} PROPERTIES OUTPUT_NAME ${target})
+  target_link_libraries(${TARGET} PRIVATE cipher)
+endfunction()
+
+function(unittest target)
+  set(TARGET "${TARGET_PREFIX}${target}")
+  add_test(NAME ${target} COMMAND $<TARGET_FILE:${TARGET}> ${ARGN})
+endfunction()
+
+building(cipher cipher.c)
+unittest(cipher)
+
+building(hash hash.c)
+unittest(hash)
+
+building(hmac hmac.c)
+unittest(hmac)
+
+building(info info.c)
+unittest(info)
+
+building(word word.c)
+unittest(word)
+
+building(json json.c)
+unittest(json)
+
+building(sqlite sqlite.c)
+unittest(sqlite)
