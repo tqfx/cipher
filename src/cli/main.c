@@ -172,7 +172,7 @@ static void main_help(void)
   -f --filename  filename\n\
      --import    filename\n\
      --export    filename\n\
-hash algorithm: MD5(default)\n\
+hash: MD5(default)\n\
      SHA1  SHA256  SHA224  BLAKE2S\n\
      SHA3  SHA512  SHA384  BLAKE2B\n\
 Copyright (C) 2020-present tqfx, All rights reserved.";
