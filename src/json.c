@@ -81,7 +81,7 @@ int c_json_export_info(cJSON const *in, c_info_s *out)
         cipher_copy(info->cipher, ctx);
 
         object = cJSON_GetObjectItem(item, "time");
-        info->time = object ? (a_i64_t)cJSON_GetNumberValue(object) : time(NULL) + LONG_MIN;
+        info->time = object ? (a_i64_t)cJSON_GetNumberValue(object) : time(NULL) + A_I32_MIN;
     }
     return 0;
 }

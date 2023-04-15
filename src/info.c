@@ -14,7 +14,7 @@ void c_info_dtor(c_info_s *ctx)
     {
         info_s *it = a_avl_entry(cur, info_s, node);
         cipher_dtor(it->cipher);
-        it->time = LONG_MIN;
+        it->time = A_I32_MIN;
         a_die(info_s, it);
     }
     ctx->count = 0;
@@ -57,7 +57,7 @@ info_s *c_info_add(c_info_s *ctx, void const *text)
         return it;
     }
     ++ctx->count;
-    it->time = LONG_MIN;
+    it->time = A_I32_MIN;
     cipher_ctor(it->cipher);
     cipher_set_text(it->cipher, text);
     a_avl_insert(ctx->root, it->node, cipher_cmp);

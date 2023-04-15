@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         }
         a_str_printf(str, "%zu", i);
         info_s *ctx = c_info_add(info, a_str_ptr(str));
-        ctx->time = time(NULL) + LONG_MIN;
+        ctx->time = time(NULL) + A_I32_MIN;
     }
 
     c_sqlite_begin(db);

@@ -302,7 +302,7 @@ int app_create_info(a_vec_s const *info)
         {
             STATUS_SET(local->status, STATUS_MODK);
             cipher_copy(ctx->cipher, it);
-            ctx->time = time(NULL) + LONG_MIN;
+            ctx->time = time(NULL) + A_I32_MIN;
             app_exec_ctx(it);
         }
         else
