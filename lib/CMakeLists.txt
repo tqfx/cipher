@@ -1,4 +1,3 @@
-set(WITH_CXX 0 CACHE BOOL "")
 add_subdirectory(liba)
 
 if(NOT HAS_CJSON_H)
