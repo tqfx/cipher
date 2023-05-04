@@ -7,8 +7,8 @@ set_xmakever("2.5.0")
 -- set project version
 set_version("0.1.1", {build = "%Y%m%d%H%M"})
 
--- option: with-cxx
-option("with-cxx")
+-- option: liba-cxx
+option("liba-cxx")
     set_default(true)
     set_showmenu(true)
     set_description("Enable/Disable c++")
@@ -18,7 +18,7 @@ option_end()
 option("warning")
     set_default(false)
     set_showmenu(true)
-    set_description("Enable/Disable warning")
+    set_description("Enable/Disable warnings")
 option_end()
 
 if has_config("warning") then
@@ -29,8 +29,8 @@ if has_config("warning") then
         add_cxflags("/wd4514", "/wd4710", "/wd4711", "/wd4820", "/wd5039", "/wd5045")
     end
     add_cflags("-Wno-declaration-after-statement")
-    add_cxflags("-Wno-gnu-line-marker")
     add_cxxflags("-Wno-c++98-compat-pedantic")
+    add_cxflags("-Wno-unsafe-buffer-usage")
 end
 
 -- add build modes
@@ -47,7 +47,7 @@ if is_mode("check") and not is_plat("mingw") then
 end
 
 -- option: real
-option("real")
+option("liba-real")
     set_default("8")
     set_showmenu(true)
     set_values("4", "8", "16")
@@ -55,16 +55,16 @@ option("real")
 option_end()
 
 -- option: rpath
-option("rpath")
+option("liba-rpath")
     set_showmenu(true)
     set_description("dynamic library search path")
 option_end()
 
-target("a.objs")
+target("a")
     -- make as a collection of objects
     set_kind("object")
     -- detect c code functions
-    real = get_config("real")
+    real = get_config("liba-real")
     includes("check_csnippets.lua")
     local source = 'int x = 1; puts(*(char *)&x ? "1234" : "4321");'
     configvar_check_csnippets("A_BYTE_ORDER", source, {output = true, number = true})
@@ -76,9 +76,9 @@ target("a.objs")
     function check_math(funcs, opt)
         includes("check_cfuncs.lua")
         for i, func in pairs(funcs) do
-            local have = "A_HAVE_" .. string.upper(func)
-            if real == "16" then func = func .. 'l' end
-            if real == "4" then func = func .. 'f' end
+            local have = "A_HAVE_"..string.upper(func)
+            if real == "16" then func = func..'l' end
+            if real == "4" then func = func..'f' end
             configvar_check_cfuncs(have, func, opt)
         end
     end
@@ -104,12 +104,12 @@ target("a.objs")
     -- set export library symbols
     add_defines("A_EXPORTS")
     -- add the common source files
-    if not table.empty(os.files("src/**.cpp")) and has_config("with-cxx") then
+    if not table.empty(os.files("src/**.cpp")) and has_config("liba-cxx") then
         add_files("src/**.cpp")
     end
     add_files("src/**.c")
     -- add the platform options
-    rpath = get_config("rpath")
+    rpath = get_config("liba-rpath")
     if rpath then
         add_rpathdirs(rpath, {public = true})
         add_linkdirs(rpath, {public = true})
@@ -120,13 +120,12 @@ target("a.objs")
     end
 target_end()
 
-target("a")
+target("alib")
+    set_basename("a")
     -- make as a static library
     set_kind("static")
-    -- add the dependent target
-    add_deps("a.objs")
     -- add the header files for installing
-    if not table.empty(os.files("include/**.hpp")) and has_config("with-cxx") then
+    if not table.empty(os.files("include/**.hpp")) and has_config("liba-cxx") then
         add_headerfiles("include/(**.hpp)")
     end
     add_headerfiles("include/(**.h)")
@@ -134,11 +133,13 @@ target("a")
     after_install(function (target)
         if target:installdir() then
             local old = "#if defined(A_HAVE_H)"
-            local new = "#include \"a.xmake.h\"\n" .. old
+            local new = "#include \"a.xmake.h\"\n"..old
             local includedir = path.join(target:installdir(), "include")
             io.replace(path.join(includedir, "a", "a.h"), old, new, {plain = true})
         end
     end)
+    -- add the dependent target
+    add_deps("a")
 target_end()
 
 target("liba")
@@ -146,38 +147,33 @@ target("liba")
     set_prefixname("lib")
     -- make as a shared library
     set_kind("shared")
-    -- add the dependent target
-    add_deps("a.objs")
     -- add the platform options
     if is_plat("windows") then
         add_defines("A_IMPORTS", {interface = true})
     end
+    -- add the dependent target
+    add_deps("a")
 target_end()
 
--- include lua sources
-if os.exists("lua/xmake.lua") then
-    includes("lua")
-end
-
--- option: with-rust
-option("with-rust")
+-- option: liba-rust
+option("liba-rust")
     set_default(false)
     set_showmenu(true)
     set_description("Enable/Disable rust")
 option_end()
 
-if has_config("with-rust") then
+if has_config("liba-rust") then
     add_requires("cargo::liba", {configs = {cargo_toml = path.join(os.projectdir(), "Cargo.toml")}})
-    target("a.rust")
+    target("arust")
         set_basename("a")
         set_kind("static")
-        add_deps("a.objs")
         add_files("src/lib.rs")
         add_packages("cargo::liba")
+        add_deps("a")
     target_end()
 end
 
--- include test sources
-if os.exists("test/xmake.lua") then
-    includes("test")
+-- include module sources
+if not table.empty(os.files("*/xmake.lua")) then
+    includes("*/xmake.lua")
 end
